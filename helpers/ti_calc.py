@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 '''
 Deteremining the ti (the smallest real number that satisfying the used equation)
@@ -15,7 +16,7 @@ def ti_calc(lam:np.double, mu:np.double, M:int, k:int):
         t_end = int(approximate_ti + 20)
 
         for t in range(t_start,t_end):
-            n_t = np.floor(t*lam) - np.floor((mu*t)-(mu/lam))
+            n_t = math.floor(t*lam) - math.floor((mu*t)-(mu/lam))
             if n_t == k_max:
                 return t
             
@@ -27,7 +28,7 @@ def ti_calc(lam:np.double, mu:np.double, M:int, k:int):
         t_end = int(approximate_ti + 20)
 
         for t in range(t_start,t_end):
-            n_t = M + np.floor(t*lam) - np.floor(mu*t)
+            n_t = M + math.floor(t*lam) - math.floor(mu*t)
             if n_t == 0:
                 return t
             
