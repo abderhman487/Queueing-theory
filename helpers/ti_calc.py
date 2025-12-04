@@ -8,15 +8,15 @@ def ti_calc(lam:np.double, mu:np.double, M:int, k:int):
 
     if lam > mu:
         # ti is when n(t) == k+1 because k is the max value rhe queue can handle
-        k = k+1
+        k_max = k+1
 
-        approximate_ti = (k-(mu/lam)) / (lam-mu)
+        approximate_ti = (k_max-(mu/lam)) / (lam-mu)
         t_start = int(max(1, approximate_ti - 10)) #max(1,ti) because ti - 10 could be negative
         t_end = int(approximate_ti + 20)
 
         for t in range(t_start,t_end):
             n_t = np.floor(t*lam) - np.floor((mu*t)-(mu/lam))
-            if n_t == k:
+            if n_t == k_max:
                 return t
             
     if mu > lam:
@@ -32,4 +32,5 @@ def ti_calc(lam:np.double, mu:np.double, M:int, k:int):
                 return t
             
     if mu == lam:
+        # ti = M
         return 0 
