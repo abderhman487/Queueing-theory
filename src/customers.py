@@ -5,7 +5,7 @@ from helpers.ti_calc import ti_calc
 
 
 '''
-Deteremining the number of customers n(t) at t < ti
+Deteremining the number of customers n(t) at any given time
 a queue **D/D/1/(K-1)/FIFO** simulation
 
 if: inter-arrival pattern > service pattern (λ > μ)
