@@ -86,5 +86,3 @@ python -m tests.test_stochastic
   * `helpers/`: Helper functions for validations and intermediate calculations.
   * `tests/`: Unit tests for the project.
   * `main.py`: The CLI entry point for the user.
-```
-```
