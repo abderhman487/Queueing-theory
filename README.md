@@ -24,7 +24,7 @@ Ensure **Python 3.x** is installed on your system.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/abderhman487/Queueing-theory.git](https://github.com/abderhman487/Queueing-theory.git)
+    git clone https://github.com/abderhman487/Queueing-theory.git
     cd Queueing-theory
     ```
 
