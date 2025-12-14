@@ -1,6 +1,7 @@
 from src import customers
 from src import waiting
 from src import stochastic_customers
+from src import plotter
 
 #User Inputs
 choice = int(input("""Enter your requested system:
@@ -22,10 +23,16 @@ if choice == 1:
     if mu <=0:
         raise ValueError("λ and μ must be positive numbers.")
 
+    M = 0
     if mu >= lam:
         M = int(input("Enter the initial customers in the system (M): "))
 
     k = int(input("Enter the limit on the system size (k-1): "))
+
+    want_plot = input("\nGenerate Simulation Plot? (y/n): ")
+    if want_plot.lower() == 'y':
+        output_img = plotter.generate_dd1_plot(lam, mu, M, k)
+        print(f"Plot saved to '{output_img}'")
 
     while True:
         n_t = 0
