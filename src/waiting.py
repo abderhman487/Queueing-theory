@@ -58,11 +58,11 @@ def dd1k_mu_gt(lam:np.double, mu:np.double, M:int, k:int, n:int):
     if n == 0:
         return (M - 1) / (2 * mu)
     
-    ti = ti_calc(lam, mu, 0, k)
+    ti = ti_calc(lam, mu, M, k)
 
-    first_balked_customer = lam * ti
-    if n < first_balked_customer:
-        return (M + n - 1) - (n * math.ceil(1/mu))
+    limit_customer = math.floor(lam * ti)
+    if n <= limit_customer:
+        return ( (M + n - 1) * math.ceil(1/mu) ) - ( n * math.ceil(1/lam) )
 
     return 0
 

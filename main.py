@@ -1,5 +1,6 @@
 from src import customers
 from src import waiting
+from src import stochastic_customers
 
 #User Inputs
 choice = int(input("""Enter your requested system:
@@ -12,55 +13,94 @@ if choice != 1 and choice != 2:
     raise ValueError("Enter a valid choice (1 or 2).")
 
 if choice == 1:
-        
-        lam = eval(input("Enter the inter-arrival rate into the system (λ): "))
-        if lam <= 0:
-            raise ValueError("λ and μ must be positive numbers.")
+    print("\n--- D/D/1 Deterministic System ---")
+    lam = eval(input("Enter the inter-arrival rate into the system (λ): "))
+    if lam <= 0:
+        raise ValueError("λ and μ must be positive numbers.")
 
-        mu = eval(input("Enter the service-time rate at the system (μ): "))
-        if mu <=0:
-            raise ValueError("λ and μ must be positive numbers.")
+    mu = eval(input("Enter the service-time rate at the system (μ): "))
+    if mu <=0:
+        raise ValueError("λ and μ must be positive numbers.")
 
-        if mu >= lam:
-            M = int(input("Enter the initial customers in the system (M): "))
+    if mu >= lam:
+        M = int(input("Enter the initial customers in the system (M): "))
 
-        k = int(input("Enter the limit on the system size (k-1): "))
+    k = int(input("Enter the limit on the system size (k-1): "))
 
+    while True:
+        n_t = 0
+        t_input = input("Enter the requested time t (or enter 'q' to exit): ")
+
+        if t_input.lower() == 'q':
+            break
+
+        t = eval(t_input)
+
+        if lam > mu:
+            n_t = customers.dd1k_lam_gt(lam, mu, k, t)
+
+        if mu > lam:
+            n_t = customers.dd1k_mu_gt(lam, mu, M, k, t)    
+
+        if mu == lam:
+            n_t = customers.dd1k_mu_lam_equals(lam, mu, M, k, t)
+
+        print(f"n(t)= {n_t}")
+
+    calc_wq = input("Do you want to calculate Waiting Time Wq(n)? (y/n): ")
+    if calc_wq.lower() == 'y':
         while True:
-            n_t = 0
-            t_input = input("Enter the requested time t (or enter 'q' to exit): ")
+            wq_val = 0
+            n_input = input("Enter the requested customer number n (or enter 'q' to exit): ")
 
-            if t_input.lower() == 'q':
+            if n_input.lower() == 'q':
                 break
 
-            t = eval(t_input)
-
+            n = int(n_input)
             if lam > mu:
-                n_t = customers.dd1k_lam_gt(lam, mu, k, t)
+                wq_val = waiting.dd1k_lam_gt(lam, mu, k, n)
+            elif mu > lam:
+                wq_val = waiting.dd1k_mu_gt(lam, mu, M, k, n)
+            elif mu == lam:
+                wq_val = waiting.dd1k_mu_lam_equals(lam, mu, M, k, n)
 
-            if mu > lam:
-                n_t = customers.dd1k_mu_gt(lam, mu, M, k, t)    
+            print(f"Wq({n}) = {wq_val}")
 
-            if mu == lam:
-                n_t = customers.dd1k_mu_lam_equals(lam, mu, M, k, t)
 
-            print(f"n(t)= {n_t}")
+if choice == 2:
+    print("\n--- M/M/1 Stochastic System ---")
+    lam = float(input("Enter the inter-arrival rate into the system (λ): "))
+    mu = float(input("Enter the service-time rate at the system (μ): "))
+    
+    is_finite = input("Is there a system capacity limit (K)? (y/n): ")
+    
+    k_val = None
+    if is_finite.lower() == 'y':
+        k_val = int(input("Enter the system capacity K (Queue + Server): "))
 
-        calc_wq = input("Do you want to calculate Waiting Time Wq(n)? (y/n): ")
-        if calc_wq.lower() == 'y':
-            while True:
-                wq_val = 0
-                n_input = input("Enter the requested time t (or enter 'q' to exit): ")
+    try:
+        metrics = stochastic_customers.calc_mm1_metrics(lam, mu, k_val)
+        
+        print(f"\n--- Results for {metrics['model']} ---")
+        print(f"Traffic Intensity (ρ)  : {metrics['rho']:.4f}")
+        print(f"Prob. of Empty (P0)    : {metrics['P0']:.4f}")
+          
+        if k_val:
+            print(f"Prob. of Full (Pk)     : {metrics['Pk']:.4f} (Lost Customers)")
+            print(f"Effective λ (λ_eff)    : {metrics['lambda_eff']:.4f}")
+            
+        print("-" * 30)
+        print(f"Avg Customers in System (L) : {metrics['L']:.4f}")
+        print(f"Avg Customers in Queue (Lq) : {metrics['Lq']:.4f}")
+        print(f"Avg Time in System (W)      : {metrics['W']:.4f}")
+        print(f"Avg Time in Queue (Wq)      : {metrics['Wq']:.4f}")
 
-                if n_input.lower() == 'q':
-                    break
+        # Optional P(n)
+        check_prob = input("\nCalculate probability P(n)? (y/n): ")
+        if check_prob.lower() == 'y':
+            n_val = int(input("Enter n: "))
+            pn = stochastic_customers.calculate_pn(lam, mu, n_val, k_val)
+            print(f"P({n_val}) = {pn:.4f}")
 
-                n = eval(n)
-                if lam > mu:
-                    wq_val = waiting.dd1k_lam_gt(lam, mu, k, n)
-                elif mu > lam:
-                    wq_val = waiting.dd1k_mu_gt(lam, mu, M, k, n)
-                elif mu == lam:
-                    wq_val = waiting.dd1k_mu_lam_equals(lam, mu, M, k, n)
-
-                print(f"Wq({n}) = {wq_val}")
+    except ValueError as e:
+        print(f"Error: {e}")
